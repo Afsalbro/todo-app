@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import AddTodoModal from '../modal/AddTodoModal';
+import { Card } from 'react-bootstrap';
+import Row from 'react-bootstrap/Row'; 
+import Col from 'react-bootstrap/Col'; 
+import {getRandomColor} from '../utils/ColorUtils'
 
 function TodoList() {
   const [todos, setTodos] = useState<{ title: string; description: string; category: string; }[]>([]);
@@ -31,20 +35,24 @@ function TodoList() {
   };
 
   return (
-    <div className="container mt-4">
+    <div className="container mt-4 text-center">
       <h1>Todo List</h1>
       <Button variant="primary" onClick={() => setShowModal(true)}>
         Add Todo
       </Button>
-      <ListGroup className="mt-3">
+      <Row className="mt-3 text-center">
         {todos.map((todo, index) => (
-          <ListGroup.Item key={index}>
-            <strong>{todo.title}</strong>
-            <p>{todo.description}</p>
-            <p>Category: {todo.category}</p>
-          </ListGroup.Item>
+          <Col key={index} md={4}>
+            <Card className="mb-2" style={{ borderColor: getRandomColor() }}>
+              <Card.Body>
+                <Card.Title><strong>{todo.title}</strong></Card.Title>
+                <Card.Text>{todo.description}</Card.Text>
+                <Card.Text>Category: {todo.category}</Card.Text>
+              </Card.Body>
+            </Card>
+          </Col>
         ))}
-      </ListGroup>
+      </Row>
 
       <AddTodoModal show={showModal} onHide={() => setShowModal(false)} onSave={addTodo} />
     </div>
