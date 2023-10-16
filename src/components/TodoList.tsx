@@ -1,16 +1,19 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import AddTodoModal from '../modal/AddTodoModal';
 import { Card } from 'react-bootstrap';
 import Row from 'react-bootstrap/Row'; 
 import Col from 'react-bootstrap/Col'; 
-import {getRandomColor} from '../utils/ColorUtils'
+import { getRandomColor } from '../utils/ColorUtils'
+import SearchBar from './SearchBar';
 
 function TodoList() {
   const [todos, setTodos] = useState<{ title: string; description: string; category: string; }[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [filteredTodos, setFilteredTodos] = useState<{ title: string; description: string; category: string; }[]>([]);
+  const [searchText, setSearchText] = useState(''); 
 
   useEffect(() => {
     const storedTodos = localStorage.getItem('todos');
@@ -22,7 +25,6 @@ function TodoList() {
 
   useEffect(() => {
     if (dataLoaded) {
-      // Save todos to local storage whenever the todos state changes
       localStorage.setItem('todos', JSON.stringify(todos));
     }
   }, [todos, dataLoaded]);
@@ -34,14 +36,34 @@ function TodoList() {
     }
   };
 
+  const handleSearch = (query: string) => {
+    const searchText = query.toLowerCase();
+    // If the search query is empty, show all todos
+    if (!searchText) {
+      setFilteredTodos(todos);
+    } else {
+      const filtered = todos.filter((todo) => {
+        return (
+          todo.title.toLowerCase().includes(searchText) ||
+          todo.description.toLowerCase().includes(searchText) ||
+          todo.category.toLowerCase().includes(searchText)
+        );
+      });
+      setFilteredTodos(filtered);
+    }
+  };
+
   return (
     <div className="container mt-4 text-center">
       <h1>Todo List</h1>
       <Button variant="primary" onClick={() => setShowModal(true)}>
         Add Todo
       </Button>
+      <div className='mt-3'>
+      <SearchBar onSearch={handleSearch} setSearchText={setSearchText} />
+      </div>
       <Row className="mt-3 text-center">
-        {todos.map((todo, index) => (
+        {(filteredTodos.length > 0 ? filteredTodos : todos).map((todo, index) => (
           <Col key={index} md={4}>
             <Card className="mb-2" style={{ borderColor: getRandomColor() }}>
               <Card.Body>
@@ -58,5 +80,4 @@ function TodoList() {
     </div>
   );
 }
-
 export default TodoList;
