@@ -10,11 +10,11 @@ interface AddTodoModalProps {
 }
 
 function AddTodoModal({ show, onHide, onSave }: AddTodoModalProps) {
-  const [newTodo, setNewTodo] = useState({ title: '', description: '', category: 'Work' }); // Set the default category to 'Work'
+  const [newTodo, setNewTodo] = useState({ title: '', description: '', category: 'Work' }); 
 
   const addTodo = () => {
     onSave(newTodo);
-    setNewTodo({ title: '', description: '', category: 'Work' }); // Reset the category to the default value
+    setNewTodo({ title: '', description: '', category: 'Work' }); 
     onHide();
   };
 

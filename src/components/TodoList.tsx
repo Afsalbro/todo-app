@@ -3,17 +3,19 @@ import Button from 'react-bootstrap/Button';
 import ListGroup from 'react-bootstrap/ListGroup';
 import AddTodoModal from '../modal/AddTodoModal';
 import { Card } from 'react-bootstrap';
-import Row from 'react-bootstrap/Row'; 
-import Col from 'react-bootstrap/Col'; 
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import { getRandomColor } from '../utils/ColorUtils'
 import SearchBar from './SearchBar';
+import CopyToClipboardButton from './CopyToClipboardButton';
+
 
 function TodoList() {
   const [todos, setTodos] = useState<{ title: string; description: string; category: string; }[]>([]);
   const [showModal, setShowModal] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [filteredTodos, setFilteredTodos] = useState<{ title: string; description: string; category: string; }[]>([]);
-  const [searchText, setSearchText] = useState(''); 
+  const [searchText, setSearchText] = useState('');
 
   useEffect(() => {
     const storedTodos = localStorage.getItem('todos');
@@ -53,6 +55,9 @@ function TodoList() {
     }
   };
 
+  const displayedTodos = searchText ? filteredTodos : todos;
+
+
   return (
     <div className="container mt-4 text-center">
       <h1>Todo List</h1>
@@ -60,21 +65,30 @@ function TodoList() {
         Add Todo
       </Button>
       <div className='mt-3'>
-      <SearchBar onSearch={handleSearch} setSearchText={setSearchText} />
+        <SearchBar onSearch={handleSearch} setSearchText={setSearchText} />
       </div>
-      <Row className="mt-3 text-center">
-        {(filteredTodos.length > 0 ? filteredTodos : todos).map((todo, index) => (
-          <Col key={index} md={4}>
-            <Card className="mb-2" style={{ borderColor: getRandomColor() }}>
-              <Card.Body>
-                <Card.Title><strong>{todo.title}</strong></Card.Title>
-                <Card.Text>{todo.description}</Card.Text>
-                <Card.Text>Category: {todo.category}</Card.Text>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+      {displayedTodos.length > 0 ? (
+        <Row className="mt-3 text-center">
+          {displayedTodos.map((todo, index) => (
+            <Col key={index} md={4}>
+              <Card className="mb-2" style={{ borderColor: getRandomColor() }}>
+                <Card.Body>
+                  <Card.Title><strong>{todo.title}</strong></Card.Title>
+                  <Card.Text>{todo.description}</Card.Text>
+                  <Card.Text>Category: {todo.category}</Card.Text>
+                  <CopyToClipboardButton content={todo.description} />
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      ) : (
+        todos.length === 0 ? (
+          <p className="mt-3">No todos</p>
+        ) : (
+          <p className="mt-3">No matching results</p>
+        )
+      )}
 
       <AddTodoModal show={showModal} onHide={() => setShowModal(false)} onSave={addTodo} />
     </div>

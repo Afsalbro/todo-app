@@ -13,8 +13,12 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, setSearchText }) => {
     onSearch(query);
   };
 
+  const handleFormSubmit = (e: any) => {
+    e.preventDefault();
+  };
+
   return (
-    <Form>
+    <Form onSubmit={handleFormSubmit}>
       <Form.Group>
         <Form.Control
           type="text"
@@ -24,6 +28,6 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, setSearchText }) => {
       </Form.Group>
     </Form>
   );
-};
+}
 
 export default SearchBar;
