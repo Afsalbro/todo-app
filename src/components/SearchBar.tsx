@@ -20,9 +20,10 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, setSearchText }) => {
   return (
     <Form onSubmit={handleFormSubmit}>
       <Form.Group>
+      <Form.Label>Search:</Form.Label>
         <Form.Control
           type="text"
-          placeholder="Search..."
+          placeholder=""
           onChange={handleSearchChange}
         />
       </Form.Group>

@@ -1,14 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Button from 'react-bootstrap/Button';
-import ListGroup from 'react-bootstrap/ListGroup';
-import AddTodoModal from '../modal/AddTodoModal';
 import { Card } from 'react-bootstrap';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
-import { getRandomColor } from '../utils/ColorUtils'
+import { getRandomColor } from '../utils/ColorUtils';
 import SearchBar from './SearchBar';
 import CopyToClipboardButton from './CopyToClipboardButton';
-
+import CategoryFilter from './CategoryFilter';
+import AddTodoModal from '../modal/AddTodoModal';
 
 function TodoList() {
   const [todos, setTodos] = useState<{ title: string; description: string; category: string; }[]>([]);
@@ -16,6 +15,7 @@ function TodoList() {
   const [dataLoaded, setDataLoaded] = useState(false);
   const [filteredTodos, setFilteredTodos] = useState<{ title: string; description: string; category: string; }[]>([]);
   const [searchText, setSearchText] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(''); // State for selected category
 
   useEffect(() => {
     const storedTodos = localStorage.getItem('todos');
@@ -55,8 +55,12 @@ function TodoList() {
     }
   };
 
-  const displayedTodos = searchText ? filteredTodos : todos;
+  // Filter the todos based on the selected category
+  const filteredByCategory = selectedCategory
+    ? todos.filter((todo) => todo.category === selectedCategory)
+    : todos;
 
+  const displayedTodos = searchText ? filteredTodos : filteredByCategory;
 
   return (
     <div className="container mt-4 text-center">
@@ -64,8 +68,19 @@ function TodoList() {
       <Button variant="primary" onClick={() => setShowModal(true)}>
         Add Todo
       </Button>
-      <div className='mt-3'>
-        <SearchBar onSearch={handleSearch} setSearchText={setSearchText} />
+      <div className="mt-3">
+        <Row>
+          <Col md={6} style={{textAlign:'left'}}>
+            <SearchBar onSearch={handleSearch} setSearchText={setSearchText} />
+          </Col>
+          <Col md={6} style={{textAlign:'left'}} >
+            <CategoryFilter
+              categories={Array.from(new Set(todos.map((todo) => todo.category)))}
+              selectedCategory={selectedCategory}
+              onCategoryChange={(category) => setSelectedCategory(category)}
+            />
+          </Col>
+        </Row>
       </div>
       {displayedTodos.length > 0 ? (
         <Row className="mt-3 text-center">
@@ -83,13 +98,8 @@ function TodoList() {
           ))}
         </Row>
       ) : (
-        todos.length === 0 ? (
-          <p className="mt-3">No todos</p>
-        ) : (
-          <p className="mt-3">No matching results</p>
-        )
+        <p className="mt-3">No matching results</p>
       )}
-
       <AddTodoModal show={showModal} onHide={() => setShowModal(false)} onSave={addTodo} />
     </div>
   );
